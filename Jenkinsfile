@@ -41,8 +41,9 @@ pipeline {
     stages{
         stage("build"){
             when{
-                branch 'jenkins-jobs'
-
+                expression{
+                    BRANCH_NAME == 'jenkins-jobs'
+                }
             }
             steps{
                 echo 'building the application ....'
