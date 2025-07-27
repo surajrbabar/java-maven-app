@@ -36,10 +36,17 @@
 //         }
 //     }   
 // }
+CODE_CHANGES = getGitChanges()
 pipeline {
     agent any
     stages{
         stage("build"){
+            when{
+                branch 'jenkins-jobs'
+                expression{
+                    CODE_CHANGES=true
+                }
+            }
             steps{
                 echo 'building the application ....'
             }
