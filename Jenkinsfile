@@ -39,7 +39,8 @@
 pipeline {
     agent any
     parameters{
-        choice(name :'VERSION', choices : ['1.1.0','1.2.0','1.3.0'], description :'')
+        // choice(name :'VERSION', choices : ['1.1.0','1.2.0','1.3.0'], description :'')
+        string(name :"VERSION", defaultValue :'', description :'Enter the version')
         booleanParam(name :'executeTest', defaultValue :true, description :'')
     }
     stages{
