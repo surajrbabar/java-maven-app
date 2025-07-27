@@ -36,6 +36,7 @@
 //         }
 //     }   
 // }
+def gv
 pipeline {
     agent any
     parameters{
@@ -44,14 +45,16 @@ pipeline {
         booleanParam(name :'executeTest', defaultValue :true, description :'')
     }
     stages{
-        stage("build"){
-            when{
-                expression{
-                    env.BRANCH_NAME == "jenkins-jobs"
-                }
+        stage("init"){
+            script{
+                gv = load "script2.groovy"
             }
+        }
+        stage("build"){
             steps{
-                echo 'building the application ....'
+                script{
+                    gv.buildApp()
+                }
             }
         }
         stage("test"){
@@ -61,14 +64,16 @@ pipeline {
                 }
             }
             steps{
-                echo "The current branch is ${env.BRANCH_NAME}"
-                echo 'testing the application ....'
+                script{
+                    gv.testApp()
+                }
             }
         }
         stage("deploy"){
             steps{
-                echo 'deploying the application ....'
-                echo "Deploying the version ${params.VERSION}"
+                script{
+                    gv.deployApp()
+                }
             }
         }
     }
