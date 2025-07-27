@@ -61,6 +61,7 @@ pipeline {
                 }
             }
             steps{
+                echo "The current branch is ${env.BRANCH_NAME}"
                 echo 'testing the application ....'
             }
         }
