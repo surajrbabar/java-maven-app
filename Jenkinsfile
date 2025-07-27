@@ -44,6 +44,11 @@ pipeline {
         booleanParam(name :'executeTest', defaultValue :true, description :'')
     }
     stages{
+        when{
+            expression{
+                env.BRANCH_NAME == 'main'
+            }
+        }
         stage("build"){
             steps{
                 echo 'building the application ....'
