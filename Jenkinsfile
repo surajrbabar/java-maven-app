@@ -32,7 +32,7 @@ pipeline {
             // }
             steps{
                 script{
-                    buildImage()
+                    buildImage 'surajrbabar/java-maven-app:jma-1.4'
                 }
             }
         }
