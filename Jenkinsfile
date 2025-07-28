@@ -33,6 +33,8 @@ pipeline {
             steps{
                 script{
                     buildImage 'surajrbabar/java-maven-app:jma-1.4'
+                    dockerLogin()
+                    pushImage 'surajrbabar/java-maven-app:jma-1.4'
                 }
             }
         }
