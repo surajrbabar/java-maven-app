@@ -25,11 +25,11 @@ pipeline {
             }
         }
         stage("buildImage"){
-            // when {
-            //     expression {
-            //         BRANCH_NAME == "master"
-            //     }
-            // }
+            when {
+                expression {
+                    BRANCH_NAME == "master"
+                }
+            }
             steps{
                 script{
                     buildImage 'surajrbabar/java-maven-app:jma-1.4'
@@ -39,11 +39,11 @@ pipeline {
             }
         }
         stage("deploy"){
-            // when {
-            //     expression {
-            //         BRANCH_NAME == "master"
-            //     }
-            // }
+            when {
+                expression {
+                    BRANCH_NAME == "master"
+                }
+            }
             steps{
                 script{
                     gv.deployApp()
