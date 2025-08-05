@@ -67,7 +67,6 @@ pipeline {
             }
             steps{
                 echo "deploying the application ...."
-                echo "deployed!"
             }
         }
     }
