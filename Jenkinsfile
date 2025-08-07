@@ -19,29 +19,37 @@ pipeline{
                 script {
                     echo "Incrementing app version"
         
-                    // Parse the current version from POM
-                    sh "mvn build-helper:parse-version -DparseVersion.propertyPrefix=parsedVersion"
+                    // Read current version from pom.xml
+                    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+                    if (!matcher) {
+                        error "Could not find version in pom.xml"
+                    }
         
-                    // Read parsed values from Maven output (set as env vars in target folder)
-                    def props = readProperties file: 'target/parsedVersion.properties'
+                    def version = matcher[0][1]
+                    echo "Current version in pom.xml: ${version}"
         
-                    def major = props['parsedVersion.majorVersion']
-                    def minor = props['parsedVersion.minorVersion']
-                    def increment = props['parsedVersion.incrementalVersion'].toInteger() + 1
+                    // Split version and increment last digit
+                    def parts = version.tokenize('.')
+                    if (parts.size() < 3) {
+                        error "Version format is incorrect: ${version}"
+                    }
         
-                    def newVersion = "${major}.${minor}.${increment}"
+                    def major = parts[0]
+                    def minor = parts[1]
+                    def patch = parts[2].replaceAll('-SNAPSHOT', '').toInteger() + 1
         
-                    echo "Setting new version: ${newVersion}"
+                    def newVersion = "${major}.${minor}.${patch}"
+                    echo "New version: ${newVersion}"
         
                     // Set new version in pom.xml
                     sh "mvn versions:set -DnewVersion=${newVersion} versions:commit"
         
-                    // Save version for later stages
                     env.IMAGE_NAME = "${newVersion}-${BUILD_NUMBER}"
-                    echo "IMAGE_NAME is: ${env.IMAGE_NAME}"
+                    echo "Set IMAGE_NAME to ${env.IMAGE_NAME}"
                 }
             }
         }
+
 
         stage("build jar"){
             steps{
