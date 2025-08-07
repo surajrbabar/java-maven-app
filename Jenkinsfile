@@ -17,12 +17,26 @@ pipeline{
           steps{
             script{
               echo "Incrementing app version"
-              sh ''' 
-                mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementVersion} versions:commit 
-                '''
-              def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
-              def version = matcher[0][1]
-              env.IMAGE_NAME = "${version}-${BUILD_NUMBER}"
+
+            // Parse the current version from POM
+            sh "mvn build-helper:parse-version -DparseVersion.propertyPrefix=parsedVersion"
+
+            // Read parsed values from Maven output (set as env vars in target folder)
+            def props = readProperties file: 'target/parsedVersion.properties'
+
+            def major = props['parsedVersion.majorVersion']
+            def minor = props['parsedVersion.minorVersion']
+            def increment = props['parsedVersion.incrementalVersion'].toInteger() + 1
+
+            def newVersion = "${major}.${minor}.${increment}"
+
+            echo "Setting new version: ${newVersion}"
+
+            // Set new version in pom.xml
+            sh "mvn versions:set -DnewVersion=${newVersion} versions:commit"
+
+            // Save version for later stages
+            env.IMAGE_NAME = "${newVersion}-${BUILD_NUMBER}"
             }
           }
         }
