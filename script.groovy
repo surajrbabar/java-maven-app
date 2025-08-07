@@ -17,17 +17,21 @@ def deployApp(){
 }
 
 def commit(){
-    withCredentials([usernamePassword(credentialsId : 'github-credentials', usernameVariable : 'USER', passwordVariable : 'PASS')]){
+    withCredentials([usernamePassword(credentialsId : 'github-credentials', usernameVariable : 'USER', passwordVariable : 'PASS')]) {
         def safePass = URLEncoder.encode(PASS, "UTF-8")
+        
         sh 'git status'
         sh 'git branch'
         sh 'git config --list'
-
-        sh "git remote set-url origin https://${USER}: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@github.com/surajrbabar/java-maven-app.git"
+        
+        // Use safePass here
+        sh "git remote set-url origin https://${USER}:${safePass}@github.com/surajrbabar/java-maven-app.git"
+        
         sh 'git add .'
-        sh 'git commit -m "ci : version bump"'
+        sh 'git commit -m "ci: version bump" || echo "No changes to commit"'
         sh 'git push origin HEAD:jenkins-jobs'
     }
 }
+
 
 return this;
