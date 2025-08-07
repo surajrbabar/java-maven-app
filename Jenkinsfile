@@ -19,34 +19,12 @@ pipeline{
                 script {
                     echo "Incrementing app version"
         
-                    // Read current version from pom.xml
+                    sh 'mvn build-helper:parse-version versions:set \
+                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                        versions:commit'
                     def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
-                    if (!matcher) {
-                        error "Could not find version in pom.xml"
-                    }
-        
                     def version = matcher[0][1]
-                    echo "Current version in pom.xml: ${version}"
-        
-                    // Split version and increment last digit
-                    def parts = version.tokenize('.')
-                    if (parts.size() < 3) {
-                        error "Version format is incorrect: ${version}"
-                    }
-        
-                    def major = parts[0]
-                    def minor = parts[1]
-                    def patch = parts[2].replaceAll('-SNAPSHOT', '').toInteger() + 1
-        
-                    def newVersion = "${major}.${minor}.${patch}"
-                    echo "New version: ${newVersion}"
-        
-                    // Set new version in pom.xml
-                    sh "mvn versions:set -DnewVersion=${newVersion} versions:commit"
-        
-                    env.IMAGE_NAME = "${newVersion}-${BUILD_NUMBER}"
-                    echo "Set IMAGE_NAME to ${env.IMAGE_NAME}"
-                }
+                    env.IMAGE_NAME = "$version-$BUILD_NUMBER"
             }
         }
 
