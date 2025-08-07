@@ -29,7 +29,7 @@ def commit(){
         
         sh 'git add .'
         sh 'git commit -m "ci: version bump" || echo "No changes to commit"'
-        sh 'git push origin HEAD:jenkins-jobs'
+        sh 'git push --force origin HEAD:jenkins-jobs'
     }
 }
 
