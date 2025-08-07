@@ -17,7 +17,7 @@ def deployApp(){
 }
 
 def commit(){
-    withCredentials([usernamePassword(credentialsId : 'github-credentials', usernameVariable : 'USER', passwordVariable : 'PASS')]) {
+    withCredentials([string(credentialsId : 'github-token', variable : "TOKEN"]) {
         // def safePass = URLEncoder.encode(PASS, "UTF-8")
         
         sh 'git status'
@@ -25,7 +25,7 @@ def commit(){
         sh 'git config --list'
         
         // Use safePass here
-        sh "git remote set-url origin https://${USER}:${PASS}@github.com/surajrbabar/java-maven-app.git"
+        sh "git remote set-url origin https://surajrbabar:${TOKEN}@github.com/surajrbabar/java-maven-app.git"
         
         sh 'git add .'
         sh 'git commit -m "ci: version bump" || echo "No changes to commit"'
