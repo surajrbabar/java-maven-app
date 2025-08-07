@@ -17,7 +17,7 @@ def deployApp(){
 }
 
 def commit(){
-    withCredentials([string(credentialsId : 'github-token', variable : "TOKEN"]) {
+    withCredentials([string(credentialsId : 'github-token', variable : "TOKEN")]) {
         // def safePass = URLEncoder.encode(PASS, "UTF-8")
         
         sh 'git status'
