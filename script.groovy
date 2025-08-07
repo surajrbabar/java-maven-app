@@ -18,6 +18,7 @@ def deployApp(){
 
 def commit(){
     withCredentials([usernamePassword(credentialsId : 'github-credentials', usernameVariable : 'USER', passwordVariable : 'PASS')]){
+        def safePass = URLEncoder.encode(PASS, "UTF-8")
         sh 'git status'
         sh 'git branch'
         sh 'git config --list'
