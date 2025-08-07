@@ -19,6 +19,9 @@ def deployApp(){
 def commit(){
     withCredentials([string(credentialsId : 'github-token', variable : "TOKEN")]) {
         // def safePass = URLEncoder.encode(PASS, "UTF-8")
+
+        sh 'git config --global user.email "jenkins@ex.com"'
+        sh 'git config --global user.name "jenkins"'
         
         sh 'git status'
         sh 'git branch'
