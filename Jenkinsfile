@@ -13,33 +13,36 @@ pipeline{
                 }
             }
         }
-        stage("increment version"){
-          steps{
-            script{
-              echo "Incrementing app version"
-
-            // Parse the current version from POM
-            sh "mvn build-helper:parse-version -DparseVersion.propertyPrefix=parsedVersion"
-
-            // Read parsed values from Maven output (set as env vars in target folder)
-            def props = readProperties file: 'target/parsedVersion.properties'
-
-            def major = props['parsedVersion.majorVersion']
-            def minor = props['parsedVersion.minorVersion']
-            def increment = props['parsedVersion.incrementalVersion'].toInteger() + 1
-
-            def newVersion = "${major}.${minor}.${increment}"
-
-            echo "Setting new version: ${newVersion}"
-
-            // Set new version in pom.xml
-            sh "mvn versions:set -DnewVersion=${newVersion} versions:commit"
-
-            // Save version for later stages
-            env.IMAGE_NAME = "${newVersion}-${BUILD_NUMBER}"
+        
+        stage("increment version") {
+            steps {
+                script {
+                    echo "Incrementing app version"
+        
+                    // Parse the current version from POM
+                    sh "mvn build-helper:parse-version -DparseVersion.propertyPrefix=parsedVersion"
+        
+                    // Read parsed values from Maven output (set as env vars in target folder)
+                    def props = readProperties file: 'target/parsedVersion.properties'
+        
+                    def major = props['parsedVersion.majorVersion']
+                    def minor = props['parsedVersion.minorVersion']
+                    def increment = props['parsedVersion.incrementalVersion'].toInteger() + 1
+        
+                    def newVersion = "${major}.${minor}.${increment}"
+        
+                    echo "Setting new version: ${newVersion}"
+        
+                    // Set new version in pom.xml
+                    sh "mvn versions:set -DnewVersion=${newVersion} versions:commit"
+        
+                    // Save version for later stages
+                    env.IMAGE_NAME = "${newVersion}-${BUILD_NUMBER}"
+                    echo "IMAGE_NAME is: ${env.IMAGE_NAME}"
+                }
             }
-          }
         }
+
         stage("build jar"){
             steps{
                 script{
