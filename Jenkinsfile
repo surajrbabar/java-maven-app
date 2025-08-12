@@ -9,6 +9,9 @@ pipeline {
     tools{
         maven 'maven-3.9.11'
     }
+    environment{
+        IMAGE_NAME = 'surajrbabar/java-maven-app:java-maven-1.0'
+    }
     stages{
         stage("init"){
             steps{
@@ -20,35 +23,30 @@ pipeline {
         stage("buildJar"){
             steps{
                 script{
+                    echo "Building the application ...."
                     buildApp()
                 }
             }
         }
         stage("buildImage"){
-            when {
-                expression {
-                    BRANCH_NAME == "master"
-                }
-            }
             steps{
                 script{
-                    buildImage 'surajrbabar/java-maven-app:jma-1.4'
+                    echo "Building the docker image ...."
+                    buildImage(env.IMAGE_NAME)
                     dockerLogin()
-                    pushImage 'surajrbabar/java-maven-app:jma-1.4'
+                    pushImage(env.IMAGE_NAME)
                 }
             }
         }
         stage("deploy"){
-            when {
-                expression {
-                    BRANCH_NAME == "master"
-                }
-            }
             steps{
                 script{
-                    gv.deployApp()
+                    echo "Deploying the application on the EC2 server ...."
+                    def dockerCmd = 'docker run -d -p 8080:80 surajrbabar/java-maven-app:web-1.0'
+                    sshagent(['ec2-server-key']) {
+                        sh "ssh -o StrictHostKeychecking=no ec2-user@13.201.132.82 ${dockerCmd}"
+                    }
                 }
             }
         }
-    }
 }
