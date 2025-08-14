@@ -5,7 +5,7 @@ pipeline {
         maven "maven-3.9.11"
     }
     environment{
-        IMAGE = "surajrbabar/java-maven-app:java-maven-2.0"
+        IMAGE = "surajrbabar/java-maven-app:java-maven-3.0"
     }
     stages{
         stage("init"){
@@ -19,13 +19,19 @@ pipeline {
             steps{
                 script{
                     echo "building the applicaiton ...."
-                    gv.build(env.IMAGE)
+                    gv.buildJar()
                 }
                 
             }
         }
+        stage("build image"){
+            steps{
+                script{
+                    gv.buildImage env.IMAGE
+                }
+            }
+        }
         stage("deploy"){
-           
             steps{
                 script{
                     echo "deploying the application ...."
