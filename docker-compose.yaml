@@ -1,0 +1,13 @@
+version : "3.8"
+services : 
+  java-maven-app :
+    image: surajrbabar/java-maven-app:java-maven-1.0
+    ports :
+      - 8080:8080
+  postgress :
+    image : postgres
+    ports :
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: PASS
