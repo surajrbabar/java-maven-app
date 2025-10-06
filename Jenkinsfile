@@ -2,7 +2,7 @@ def gv
 pipeline {
     agent any
     tools{
-        maven "maven-3.9.11"
+        maven "maven"
     }
     environment{
         IMAGE = "surajrbabar/java-maven-app:java-maven"
