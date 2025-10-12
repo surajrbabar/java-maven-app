@@ -1,30 +1,37 @@
-pipeline {
+#!/usr/bin/env groovy
+
+pipeline{
     agent any
     stages{
-        stage("test"){
+        stage("build app"){
             steps{
-                echo "testing the application ....."
+                script{
+                    echo "Building the application "
+                }
+                
             }
         }
-        stage("build"){
-            when {
-                expression {
-                    BRANCH_NAME == "master"
-                }
-            }
+        stage("build image"){
             steps{
-                echo "building the applicaiton ...."
+                script{
+                    echo "Building the docker image"
+                }
+              
             }
         }
         stage("deploy"){
-            when {
-                expression {
-                    BRANCH_NAME == "master"
-                }
+            environment{
+                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('enkins_aws_secret_access_key')
             }
             steps{
-                echo "deploying the application ...."
+                script{
+                    echo "Deploying the application"
+                    sh 'kubectl create deployment nginx-deployment --image=nginx:latest'
+                }
+               
             }
+            
         }
     }
 }
