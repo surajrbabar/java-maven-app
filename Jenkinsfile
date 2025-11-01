@@ -47,17 +47,29 @@ pipeline {
             }
         }
         stage("deploy"){
+            // steps{
+            //     script{
+            //         echo "deploying the application ...."
+            //         def shellCMD = 'bash ./shellScript.sh ${IMAGE_NAME}'
+            //         sshagent(['ec2-server-key']) {
+            //             sh "scp shellScript.sh ec2-user@13.201.132.82:/home/ec2-user"
+            //             sh "scp docker-compose.yaml ec2-user@13.201.132.82:/home/ec2-user"
+            //             sh "ssh -o StrictHostKeyChecking=no ec2-user@13.201.132.82 ${shellCMD}"
+            //         }
+            //     }
+                
+            // }
+            environment{
+                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+            }
             steps{
                 script{
-                    echo "deploying the application ...."
-                    def shellCMD = 'bash ./shellScript.sh ${IMAGE_NAME}'
-                    sshagent(['ec2-server-key']) {
-                        sh "scp shellScript.sh ec2-user@13.201.132.82:/home/ec2-user"
-                        sh "scp docker-compose.yaml ec2-user@13.201.132.82:/home/ec2-user"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@13.201.132.82 ${shellCMD}"
-                    }
+                    echo "Deploying the application"
+                    sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
+                    sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
                 }
-                
+               
             }
         }
         stage("commit version update"){
