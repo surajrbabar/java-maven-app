@@ -14,6 +14,8 @@ spec:
       labels: 
         app: java-maven-app
     spec:
+      imagePullSecrets:
+        - name: my-registry-key
       containers:
         - name: java-maven-app
           image: $IMAGE_NAME
